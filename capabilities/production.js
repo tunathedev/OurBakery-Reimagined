@@ -92,13 +92,13 @@ export function mount(container, ctx) {
     ]);
     const head = el('div.production-head', {}, [
       stats,
-      el('div.muted.sm', { text: `${stream.emoji || ''} build to par · ${todayKey()}` }),
+      el('div.muted.sm', { text: `${stream.emoji || ''} how much to make to hit par · ${todayKey()}` }),
       stream.productionMode === 'pull'
         ? el('div.chip.production-note', { text: 'Pull-driven — make to the pull list, not to par' }) : null,
     ]);
     const body = el('div.production-body');
     for (const [cat, list] of cats) body.append(section(cat, list));
-    root.append(head, body, el('div.pad', {}, [el('button.btn.block', { onclick: savePlan }, ['Save plan'])]));
+    root.append(head, body, el('div.pad', {}, [el('button.btn.block', { onclick: savePlan }, ['Save the make list'])]));
   }
 
   const off = bus.on('slice:' + KEY, (val) => { if (applyingLocal) return; plan = val || {}; render(); });

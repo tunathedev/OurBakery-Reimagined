@@ -31,8 +31,8 @@ export function mount(container, ctx) {
 
   function paintStatus(it, span) {
     const need = needOf(it);
-    if (need > 0) { span.className = 'chip warn'; span.textContent = `under par (need ${need})`; }
-    else { span.className = 'chip'; span.textContent = 'at par'; }
+    if (need > 0) { span.className = 'chip warn'; span.textContent = `need ${need} more`; }
+    else { span.className = 'chip'; span.textContent = 'good'; }
   }
   function paintStats() { if (belowStatNum) belowStatNum.textContent = belowCount(); }
 
@@ -87,21 +87,21 @@ export function mount(container, ctx) {
   function render() {
     clear(root);
     const stats = el('div.statrow', {}, [
-      el('div.stat', {}, [(belowStatNum = el('div.stat-num', { text: belowCount() })), el('div.stat-label', { text: 'below par' })]),
+      el('div.stat', {}, [(belowStatNum = el('div.stat-num', { text: belowCount() })), el('div.stat-label', { text: 'need more' })]),
       el('div.stat', {}, [el('div.stat-num', { text: items.length }), el('div.stat-label', { text: 'items' })]),
     ]);
     const head = el('div.inventory-head', {}, [
       stats,
-      el('div.muted.sm', { text: `${stream.emoji || ''} floor vs. par · ${todayKey()}` }),
+      el('div.muted.sm', { text: `${stream.emoji || ''} what’s out on the floor · ${todayKey()}` }),
     ]);
     const body = el('div.inventory-body');
     const below = items.filter(underPar);
-    if (below.length) body.append(section('Below par', below, 'warn'));
+    if (below.length) body.append(section('Need more', below, 'warn'));
     for (const [cat, list] of cats) {
       const rest = list.filter((it) => !underPar(it));
       if (rest.length) body.append(section(cat, rest));
     }
-    root.append(head, body, el('div.pad', {}, [el('button.btn.block', { onclick: logCount }, ['Log count'])]));
+    root.append(head, body, el('div.pad', {}, [el('button.btn.block', { onclick: logCount }, ['Save count'])]));
   }
 
   const off = bus.on('slice:' + KEY, (val) => { if (applyingLocal) return; inv = val || {}; render(); });

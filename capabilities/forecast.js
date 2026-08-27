@@ -59,7 +59,7 @@ export function mount(container, ctx) {
 
   function render() {
     util.clear(root);
-    root.append(el('div.sec-head', {}, [el('span', { text: `${stream.emoji} Sales forecast` }), el('span.count', { text: 'today' })]));
+    root.append(el('div.sec-head', {}, [el('span', { text: `${stream.emoji} How busy today?` }), el('span.count', { text: 'today' })]));
 
     const sec = el('section.sec');
     for (const [key, label] of DAYPARTS) {

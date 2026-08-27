@@ -3,7 +3,7 @@
 // A smoke test asserts every registered capability appears in APP_FILES so the PWA never
 // precaches a partial graph and ships stale/broken code to the floor.
 
-export const APP_VERSION = 'ob-v1';
+export const APP_VERSION = 'ob-v2';
 
 // Everything the app shell needs to run fully offline. Paths are relative to repo root
 // (GitHub Pages serves main from root).

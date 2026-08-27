@@ -1,4 +1,4 @@
-# OurBakery Reimagined
+# OurBakery Reimagine
 
 The H-E-B Bakery is beloved — the partner grabbing a doughnut on break, the parent placing a cake
 order, the office worker picking up a cookie platter before work. But meeting demand and growing

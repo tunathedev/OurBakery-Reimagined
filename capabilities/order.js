@@ -64,9 +64,9 @@ export function mount(container, ctx) {
       };
       save(order, { verb: 'order.placed', meta: { forDate: order.forDate || 'unset' } });
       toast('Order placed → sent to Cake'); render();
-    } }, ['🎂 Place order']);
+    } }, ['🎂 Start order']);
     wrap.append(
-      el('div.sec-head', {}, [el('span', { text: 'Take a custom-cake order' })]),
+      el('div.sec-head', {}, [el('span', { text: 'Start a cake order' })]),
       label, cake, size, el('div.row.g8', {}, [forDate]), msg, deco, curb, submit,
       el('div.muted.sm', { text: 'Customer name/phone stays on the paper slip — never typed here (no PII).' }),
     );
@@ -118,8 +118,8 @@ export function mount(container, ctx) {
     clear(root);
     if (role === 'place') {
       root.append(placeForm());
-      root.append(el('div.sec-head.mt', {}, [el('span', { text: 'Orders you placed' })]));
-      root.append(list((o) => o.placedBy === ctx.me.personId, 'No orders yet — take one above.'));
+      root.append(el('div.sec-head.mt', {}, [el('span', { text: 'Orders you started' })]));
+      root.append(list((o) => o.placedBy === ctx.me.personId, 'No orders yet — start one above.'));
     } else {
       const active = (o) => o.status !== 'picked_up';
       const counts = Object.values(orders).filter(active).length;
@@ -128,8 +128,8 @@ export function mount(container, ctx) {
         stat(Object.values(orders).filter((o) => o.status === 'ready').length, 'ready'),
         stat(Object.values(orders).filter((o) => o.status === 'placed').length, 'new'),
       ]));
-      root.append(el('div.sec-head', {}, [el('span', { text: '🎂 Custom-cake receiving queue' })]));
-      root.append(list(active, 'Queue is clear. New orders from Packager appear here live.'));
+      root.append(el('div.sec-head', {}, [el('span', { text: '🎂 Cake orders coming in' })]));
+      root.append(list(active, 'All caught up. New orders from Packager show up here right away.'));
       const done = Object.values(orders).filter((o) => o.status === 'picked_up');
       if (done.length) { root.append(el('div.sec-head.mt', {}, [el('span', { text: 'Picked up' })])); root.append(list((o) => o.status === 'picked_up', '')); }
     }

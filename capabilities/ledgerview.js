@@ -79,9 +79,9 @@ export function mount(container, ctx) {
     clear(root);
     const events = filtered();
     root.append(el('div.statrow', {}, [
-      stat(events.length, 'events'),
+      stat(events.length, 'updates'),
       stat(new Set(events.map((e) => e.actor)).size, 'people'),
-      stat(events.filter((e) => e.verb === 'praise.given').length, 'praise'),
+      stat(events.filter((e) => e.verb === 'praise.given').length, 'shout-outs'),
     ]));
 
     const bar = el('div.filterbar');
@@ -93,8 +93,8 @@ export function mount(container, ctx) {
     );
     root.append(bar);
     root.append(el('div.row.between', {}, [
-      el('div.muted.sm', { text: 'Append-only · immutable · team-visible' }),
-      el('button.btn.sm.ghost', { onclick: exportCsv }, ['⬇ CSV']),
+      el('div.muted.sm', { text: 'Everything the team did, in order.' }),
+      el('button.btn.sm.ghost', { onclick: exportCsv }, ['⬇ Export']),
     ]));
     root.append(timeline(events));
   }

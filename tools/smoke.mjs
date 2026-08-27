@@ -42,10 +42,13 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-page.on('console', (m) => { if (m.type() === 'error') errors.push('console.error: ' + m.text()); });
+// Ignore cross-origin resource-load noise (e.g. Google Fonts blocked by a sandbox proxy — harmless,
+// the font stack falls back to system fonts). Still catch real JS errors and same-origin failures.
+page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/i.test(m.text())) errors.push('console.error: ' + m.text()); });
+page.on('requestfailed', (r) => { if (r.url().startsWith('http://localhost')) errors.push('requestfailed(same-origin): ' + r.url()); });
 
 try {
-  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.goto(BASE, { waitUntil: 'domcontentloaded' }); // fonts load cross-origin; don't wait on network idle
 
   // --- login as manager Priya (5678) via the PIN pad ---
   await page.waitForSelector('#login', { timeout: 8000 });
@@ -124,7 +127,7 @@ try {
   await page.waitForSelector('.timeline-row', { timeout: 5000 });
   const rows = await page.$$('.timeline-row');
   ok(`ledger timeline shows ${rows.length} rows`);
-  await page.click('button:has-text("CSV")');
+  await page.click('button:has-text("Export")');
   await page.waitForTimeout(100);
 
   await page.screenshot({ path: path.join(ROOT, 'tools', 'smoke-ledger.png') });
@@ -136,8 +139,10 @@ try {
   if (errors.length) { for (const e of errors) fail(e); } else ok('no uncaught page errors across the whole walk');
 } catch (e) {
   fail('exception: ' + e.message);
-  const html = await page.$eval('#view', (v) => v.innerHTML).catch(() => '(no #view)');
-  console.error('--- #view snapshot ---\n' + html.slice(0, 600));
+  const body = await page.$eval('body', (v) => v.innerHTML).catch(() => '(no body)');
+  const appIds = await page.$eval('#app', (v) => Array.from(v.children).map((c) => c.id || c.className).join(',')).catch(() => '(no #app)');
+  console.error('--- #app children ---\n' + appIds);
+  console.error('--- body snapshot ---\n' + body.slice(0, 900));
   console.error('--- captured errors ---\n' + (errors.join('\n') || '(none)'));
 } finally {
   await browser.close();

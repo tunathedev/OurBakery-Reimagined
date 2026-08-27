@@ -21,8 +21,8 @@ export function mount(container, ctx) {
     root.append(el('div.sec', {}, [
       el('div.center.muted', {}, [
         el('div', { text: '📋', style: { fontSize: '2rem' } }),
-        el('div', { text: 'No opening process for this stream yet.' }),
-        el('div.sm', { text: 'Check back when your SOP is published.' }),
+        el('div', { text: 'No steps set up here yet.' }),
+        el('div.sm', { text: 'Check back soon.' }),
       ]),
     ]));
     return { unmount() {} };

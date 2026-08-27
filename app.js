@@ -82,9 +82,9 @@ function renderHeader(route) {
     const s = STREAM_BY_ID[route.streamId];
     title.append(el('span.stream-emoji', { text: s.emoji }), el('span', { text: s.label }));
     title.style.color = s.color;
-  } else if (route.view === 'hub') title.textContent = '💬 People Hub';
-  else if (route.view === 'ledger') title.textContent = '📜 Ledger of Truth';
-  else title.append(el('span', { text: 'OurBakery' }), el('span.tag', { text: 'reimagined' }));
+  } else if (route.view === 'hub') title.textContent = '💬 Team';
+  else if (route.view === 'ledger') title.textContent = '📜 Activity';
+  else title.append(el('span', { text: 'OurBakery' }), el('span.tag', { text: 'reimagine' }));
 
   const meChip = me
     ? el('button.mechip', { onclick: openMeMenu, title: me.displayName }, [el('span.avatar', { text: me.initials }), el('span.mechip-name', { text: me.displayName.split(' ')[0] })])
@@ -111,8 +111,8 @@ function renderBottomNav() {
   const item = (label, emoji, onclick) => el('button.navitem', { onclick }, [el('span.nav-emoji', { text: emoji }), el('span', { text: label })]);
   b.append(
     item('Home', '🏠', () => router.toHome()),
-    item('Hub', '💬', () => router.toHub()),
-    item('Ledger', '📜', () => router.toLedger()),
+    item('Team', '💬', () => router.toHub()),
+    item('Activity', '📜', () => router.toLedger()),
   );
 }
 
@@ -123,7 +123,8 @@ function viewHome() {
   const me = identity.me();
   v.append(el('div.home-hero', {}, [
     el('h1', { text: 'OurBakery' }),
-    el('p.muted', { text: 'A social workplace that cares for process.' }),
+    el('p.muted', { text: 'One easy place for the whole bakery team. Pick your area to get started.' }),
+    el('p.credit', {}, [el('span.pill', { text: 'Prototype' }), el('span', { text: 'Project of Bakery Partner Tomás Rangel of SA50' })]),
   ]));
   const grid = el('div.stream-grid');
   for (const s of STREAMS) {
@@ -144,13 +145,14 @@ function viewHome() {
     grid.append(card);
   }
   v.append(grid);
+  v.append(el('footer.home-foot', { text: "tomás made this for the world's greatest omni channel retailer!" }));
   analytics.track('view', 'home');
 }
 
 function onStreamClick(s) {
   if (s.external) {
     if (s.externalUrl) window.open(s.externalUrl, '_blank');
-    else toast('RTS is the existing app — link it in its manifest. It is not rebuilt here.');
+    else toast('RTS lives in its own app.');
     return;
   }
   if (!s.ready) { toast(`${s.label} — coming soon`); return; }
@@ -182,7 +184,7 @@ function showLogin() {
   const overlay = el('div#login.overlay');
   const card = el('div.login-card');
   const title = el('h2', { text: 'Who’s on the floor?' });
-  const sub = el('p.muted', { text: 'Enter your PIN — it’s a nametag, not a lock.' });
+  const sub = el('p.muted', { text: 'Tap in your PIN to sign in.' });
   const dots = el('div.pin-dots');
   const roster = el('div.roster');
   const refreshRoster = () => {
@@ -197,7 +199,7 @@ function showLogin() {
   const renderDots = () => { clear(dots); for (let i = 0; i < 4; i++) dots.append(el('span.dot' + (i < entry.length ? '.on' : ''))); };
   const press = (d) => {
     entry = (entry + d).slice(0, 8); renderDots();
-    if (entry === identity.MASTER_PIN) { toast('Master PIN — pick your name'); roster.classList.add('show'); entry = ''; renderDots(); return; }
+    if (entry === identity.MASTER_PIN) { toast('Pick your name below'); roster.classList.add('show'); entry = ''; renderDots(); return; }
     if (entry.length >= 4) {
       const p = identity.byPin(entry);
       if (p) { identity.signIn(p.personId); done(); }
@@ -212,7 +214,7 @@ function showLogin() {
       else press(k);
     } }, [k]));
   });
-  const rosterToggle = el('button.linkbtn', { onclick: () => roster.classList.toggle('show') }, ['or pick from the roster']);
+  const rosterToggle = el('button.linkbtn', { onclick: () => roster.classList.toggle('show') }, ['or tap your name']);
   card.append(title, sub, dots, pad, rosterToggle, roster);
   overlay.append(card);
   document.body.append(overlay);
@@ -227,7 +229,7 @@ function openMeMenu() {
     el('div.sheet-head', {}, [el('span.avatar', { text: me.initials }), el('div', {}, [el('div', { text: me.displayName }), el('div.muted.sm', { text: me.role === 'manager' ? 'Manager' : 'Partner' })])]),
     el('button.btn.block', { onclick: () => { overlay.remove(); router.toLedger(); } }, ['📜 My activity']),
     el('button.btn.block.ghost', { onclick: () => { identity.signOut(); overlay.remove(); showLogin(); } }, ['Sign out']),
-    sync.active ? el('div.muted.sm.center', { text: 'Live sync on' }) : el('div.muted.sm.center', { text: 'Offline mode — data on this device' }),
+    sync.active ? el('div.muted.sm.center', { text: 'Online — shared with the team' }) : el('div.muted.sm.center', { text: 'Working on this phone' }),
   ]);
   overlay.append(card); document.body.append(overlay);
 }
@@ -264,6 +266,7 @@ async function boot() {
 
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
+  const hadController = !!navigator.serviceWorker.controller; // false on a fresh first visit
   navigator.serviceWorker.register('./sw.js', { type: 'module' }).then((reg) => {
     reg.addEventListener('updatefound', () => {
       const nw = reg.installing;
@@ -272,7 +275,12 @@ function registerSW() {
     });
   }).catch(() => {});
   let reloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloaded) return; reloaded = true; location.reload(); });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // Reload only for a real UPDATE (page already had a controller). Skip the first-install claim
+    // so there's no reload flash on a user's first visit.
+    if (!hadController || reloaded) return;
+    reloaded = true; location.reload();
+  });
 }
 
 boot();
