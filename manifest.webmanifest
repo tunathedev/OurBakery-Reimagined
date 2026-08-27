@@ -1,0 +1,14 @@
+{
+  "name": "OurBakery Reimagined",
+  "short_name": "OurBakery",
+  "description": "A social workplace that cares for process.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a0f17",
+  "theme_color": "#b8006b",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

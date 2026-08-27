@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "ob": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "ledger": {
+        "$stream": {
+          "$day": {
+            "$eventId": {
+              ".write": "!data.exists()"
+            }
+          }
+        }
+      }
+    }
+  }
+}
