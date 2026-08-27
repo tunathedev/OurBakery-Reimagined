@@ -1,13 +1,13 @@
 {
-  "name": "OurBakery Reimagined",
+  "name": "OurBakery Reimagine",
   "short_name": "OurBakery",
-  "description": "A social workplace that cares for process.",
+  "description": "One easy app for the whole bakery team.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1a0f17",
-  "theme_color": "#b8006b",
+  "background_color": "#E31837",
+  "theme_color": "#E31837",
   "icons": [
     { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]

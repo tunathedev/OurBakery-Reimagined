@@ -20,7 +20,7 @@ export function mount(container, ctx) {
   // ---- composer ----
   function composer() {
     const box = el('div.composer');
-    const input = el('input.input', { placeholder: 'Post to the floor log…', maxlength: '140' });
+    const input = el('input.input', { placeholder: 'Leave a note for the team…', maxlength: '140' });
     const post = el('button.btn', { onclick: () => {
       const t = input.value.trim(); if (!t) return;
       record({ capability: 'people', stream: 'core', verb: 'log.posted', meta: { note: t.slice(0, 140) } });
@@ -90,7 +90,7 @@ export function mount(container, ctx) {
 
   function tasksView() {
     const wrap = el('div.tasks');
-    const add = el('div.composer', {}, [(ti = el('input.input', { placeholder: 'Add a claimable task…', maxlength: '100' })),
+    const add = el('div.composer', {}, [(ti = el('input.input', { placeholder: 'Add a task anyone can grab…', maxlength: '100' })),
       el('button.btn', { onclick: () => { const t = ti.value.trim(); if (!t) return; const id = 'task:' + uuid(); tasks[id] = { id, text: t, claimedBy: null, done: false, ts: Date.now() }; persistTasks(); ti.value = ''; draw(); } }, ['Add'])]);
     var ti;
     wrap.append(add);
@@ -115,8 +115,8 @@ export function mount(container, ctx) {
     const roll = projections.accountability({ since });
     const mine = roll.find((r) => r.personId === ctx.me.personId);
     root.append(el('div.statrow', {}, [
-      stat(projections.feed({ limit: 999 }).filter((f) => f.ts >= since).length, 'actions today'),
-      stat(projections.praiseWall({ limit: 999 }).filter((p) => p.ts >= since).length, 'praise today'),
+      stat(projections.feed({ limit: 999 }).filter((f) => f.ts >= since).length, 'done today'),
+      stat(projections.praiseWall({ limit: 999 }).filter((p) => p.ts >= since).length, 'shout-outs'),
       stat(mine ? mine.actions : 0, 'yours'),
     ]));
     root.append(composer());

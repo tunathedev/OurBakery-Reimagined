@@ -35,7 +35,7 @@ export function mount(container, ctx) {
   }
   function flag(std) { record({ capability: 'standards', stream: stream.id, verb: 'standard.flagged', meta: { title: std.title } }); toast('Flagged a miss'); }
   function met(std) { record({ capability: 'standards', stream: stream.id, verb: 'standard.met', meta: { title: std.title } }); toast('Marked met ✓'); }
-  function ack(std) { record({ capability: 'standards', stream: stream.id, verb: 'standard.acknowledged', meta: { title: std.title } }); toast('Acknowledged'); }
+  function ack(std) { record({ capability: 'standards', stream: stream.id, verb: 'standard.acknowledged', meta: { title: std.title } }); toast('Got it 👍'); }
 
   function streamChip(id) {
     if (id === 'all') return el('span.chip.ghost', { text: 'all streams' });
@@ -70,11 +70,11 @@ export function mount(container, ctx) {
       );
     } else {
       actions.append(mine
-        ? el('span.chip', { text: '✓ Acknowledged' })
-        : el('button.btn.sm', { onclick: () => ack(std) }, ['Acknowledge']));
+        ? el('span.chip', { text: '✓ Got it' })
+        : el('button.btn.sm', { onclick: () => ack(std) }, ['Got it']));
     }
     c.append(el('div.row.standards-foot', {}, [
-      el('span.badge', { text: `👏 ${acks.size} ack${acks.size === 1 ? '' : 's'}` }),
+      el('span.badge', { text: `${acks.size} said “got it”` }),
       actions,
     ]));
     return c;
