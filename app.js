@@ -124,6 +124,7 @@ function viewHome() {
   v.append(el('div.home-hero', {}, [
     el('h1', { text: 'OurBakery' }),
     el('p.muted', { text: 'One easy place for the whole bakery team. Pick your area to get started.' }),
+    el('p.credit', {}, [el('span.pill', { text: 'Prototype' }), el('span', { text: 'Project of Bakery Partner Tomás Rangel of SA50' })]),
   ]));
   const grid = el('div.stream-grid');
   for (const s of STREAMS) {
@@ -144,6 +145,7 @@ function viewHome() {
     grid.append(card);
   }
   v.append(grid);
+  v.append(el('footer.home-foot', { text: "tomás made this for the world's greatest omni channel retailer!" }));
   analytics.track('view', 'home');
 }
 
@@ -264,6 +266,7 @@ async function boot() {
 
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
+  const hadController = !!navigator.serviceWorker.controller; // false on a fresh first visit
   navigator.serviceWorker.register('./sw.js', { type: 'module' }).then((reg) => {
     reg.addEventListener('updatefound', () => {
       const nw = reg.installing;
@@ -272,7 +275,12 @@ function registerSW() {
     });
   }).catch(() => {});
   let reloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloaded) return; reloaded = true; location.reload(); });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // Reload only for a real UPDATE (page already had a controller). Skip the first-install claim
+    // so there's no reload flash on a user's first visit.
+    if (!hadController || reloaded) return;
+    reloaded = true; location.reload();
+  });
 }
 
 boot();
